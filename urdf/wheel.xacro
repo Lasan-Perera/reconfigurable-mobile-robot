@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="reconfig_robot">
+
+    <xacro:macro name="fixed_wheel" params="prefix parent_link x y z">
+
+        <link name="${prefix}_wheel">
+            <visual>
+            <geometry>
+                <cylinder radius="0.05" length="0.03"/>
+            </geometry>
+            </visual>
+            <collision>
+            <geometry>
+                <cylinder radius="0.05" length="0.03"/>
+            </geometry>
+            </collision>
+            <inertial>
+            <mass value="0.2"/>
+            <inertia ixx="0.0001" iyy="0.0001" izz="0.0001" ixy="0" ixz="0" iyz="0"/>
+            </inertial>
+        </link>
+
+        <joint name="${prefix}_wheel_joint" type="continuous">
+            <parent link="${parent_link}"/>
+            <child link="${prefix}_wheel"/>
+            <origin xyz="${x} ${y} ${z}" rpy="1.5708 0 0"/>
+            <axis xyz="0 0 1"/>
+        </joint>
+
+    </xacro:macro>
+
+    <link name="chassis_link">
+        <visual>
+            <geometry>
+            <box size="0.30 0.20 0.05"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+            <box size="0.30 0.20 0.05"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="2.0"/>
+            <inertia ixx="0.01" iyy="0.01" izz="0.01" ixy="0" ixz="0" iyz="0"/>
+        </inertial>
+    </link>
+
+    
+    <xacro:fixed_wheel prefix="front_left" parent_link="chassis_link" x="0.12" y="0.09" z="0"/>
+    <xacro:fixed_wheel prefix="front_right" parent_link="chassis_link" x="0.12" y="-0.09" z="0"/>
+
+    <xacro:macro name="folding_wheel" params="prefix parent_link x y z fold_axis_sign">
+
+        <!-- the small intermediate link the fold joint rotates -->
+        <link name="${prefix}_fold_arm">
+            <visual>
+            <geometry>
+                <box size="0.02 0.02 0.02"/>
+            </geometry>
+            </visual>
+            <inertial>
+            <mass value="0.05"/>
+            <inertia ixx="0.00001" iyy="0.00001" izz="0.00001" ixy="0" ixz="0" iyz="0"/>
+            </inertial>
+        </link>
+
+        <joint name="${prefix}_fold_joint" type="revolute">
+            <parent link="${parent_link}"/>
+            <child link="${prefix}_fold_arm"/>
+            <origin xyz="${x} ${y} ${z}" rpy="0 0 0"/>
+            <axis xyz="${fold_axis_sign} 0 0"/>
+            <limit lower="0" upper="1.5708" effort="10" velocity="1"/>
+        </joint>
+
+        <link name="${prefix}_wheel">
+            <visual>
+            <geometry>
+                <cylinder radius="0.05" length="0.03"/>
+            </geometry>
+            </visual>
+            <collision>
+            <geometry>
+                <cylinder radius="0.05" length="0.03"/>
+            </geometry>
+            </collision>
+            <inertial>
+            <mass value="0.2"/>
+            <inertia ixx="0.0001" iyy="0.0001" izz="0.0001" ixy="0" ixz="0" iyz="0"/>
+            </inertial>
+        </link>
+
+        <joint name="${prefix}_spin_joint" type="continuous">
+            <parent link="${prefix}_fold_arm"/>
+            <child link="${prefix}_wheel"/>
+            <origin xyz="-0.05 0 0" rpy="1.5708 0 0"/>
+            <axis xyz="0 0 1"/>
+        </joint>
+
+    </xacro:macro>
+
+    <xacro:folding_wheel prefix="rear_left" parent_link="chassis_link" x="-0.12" y="0.09" z="0" fold_axis_sign="1"/>
+    <xacro:folding_wheel prefix="rear_right" parent_link="chassis_link" x="-0.12" y="-0.09" z="0" fold_axis_sign="-1"/>
+
+    <link name="caster_wheel">
+        <visual>
+            <geometry>
+                <sphere radius="0.02"/>
+            </geometry>
+        </visual>
+        <collision>
+            <geometry>
+                <sphere radius="0.02"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="0.05"/>
+            <inertia ixx="0.00001" iyy="0.00001" izz="0.00001" ixy="0" ixz="0" iyz="0"/>
+        </inertial>
+    </link>
+
+    <joint name="caster_joint" type="fixed">
+        <parent link="chassis_link"/>
+        <child link="caster_wheel"/>
+        <origin xyz="-0.12 0 -0.03" rpy="0 0 0"/>
+    </joint>
+
+</robot>
