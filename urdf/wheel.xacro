@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="reconfig_robot">
-
+<xacro:include filename="reconfig_robot.ros2_control.xacro"/>
     <xacro:macro name="fixed_wheel" params="prefix parent_link x y z">
 
         <link name="${prefix}_wheel">
