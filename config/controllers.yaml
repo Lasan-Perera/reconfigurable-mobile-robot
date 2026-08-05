@@ -5,6 +5,10 @@ controller_manager:
       type: joint_state_broadcaster/JointStateBroadcaster
     front_diff_drive_controller:
       type: diff_drive_controller/DiffDriveController
+    four_wheel_diff_drive_controller:
+      type: diff_drive_controller/DiffDriveController
+    fold_position_controller:
+      type: position_controllers/JointGroupPositionController
 
 front_diff_drive_controller:
   ros__parameters:
@@ -12,3 +16,16 @@ front_diff_drive_controller:
     right_wheel_names: ["front_right_wheel_joint"]
     wheel_separation: 0.18
     wheel_radius: 0.05
+
+four_wheel_diff_drive_controller:
+  ros__parameters:
+    left_wheel_names: ["front_left_wheel_joint", "rear_left_spin_joint"]
+    right_wheel_names: ["front_right_wheel_joint", "rear_right_spin_joint"]
+    wheel_separation: 0.18
+    wheel_radius: 0.05
+
+fold_position_controller:
+  ros__parameters:
+    joints:
+      - "rear_left_fold_joint"
+      - "rear_right_fold_joint"

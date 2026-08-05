@@ -38,9 +38,23 @@ def generate_launch_description():
         arguments=['front_diff_drive_controller']  
     )
 
+    four_wheel_diff_drive_spawner = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=['four_wheel_diff_drive_controller', '--inactive']
+    )
+
+    fold_position_controller_spawner = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=['fold_position_controller']
+    )
+
     return LaunchDescription([
         robot_state_publisher,
         controller_manager,
         joint_state_broadcaster_spawner,
-        front_diff_drive_spawner
+        front_diff_drive_spawner,
+        four_wheel_diff_drive_spawner,
+        fold_position_controller_spawner
     ])
