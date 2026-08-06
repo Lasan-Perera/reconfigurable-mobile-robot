@@ -2,7 +2,8 @@
 
 A simulated mobile robot that **physically reconfigures its own morphology at runtime**,
 switching between a 4-wheel deployed stance and a compact 2-wheel differential-drive
-stance by folding a pair of wheels — with the ROS 2 control stack switching to match.
+stance by folding a pair of wheels — with the ROS 2 control stack switching to match,
+coordinated by a dedicated reconfiguration sequencing node.
 
 This project is a control-reconfiguration case study, not a multi-module
 self-reconfiguration system: the mechanism, kinematics, and controller-switching
@@ -23,10 +24,10 @@ without inter-module docking or a combinatorial reconfiguration-planning algorit
 - **2-wheel folded mode** — a rear wheel pair folds up and out of contact via an
   actuated hinge joint; the robot drives on the front two wheels only, balanced by a
   passive caster. Suited to squeezing through narrow gaps.
-- **Reconfiguration** is a coordinated sequence: stop the active drive controller,
-  command the fold joints to their new target, wait for completion, then activate the
-  matching drive controller — implemented via `ros2_control`'s `switch_controller`
-  service.
+- **Reconfiguration** is a coordinated, safety-ordered sequence — deactivate the active
+  drive controller, command the fold joints to their new target, wait for the fold to
+  physically complete, then activate the matching drive controller — driven by a
+  standalone ROS 2 node calling `ros2_control`'s `switch_controller` service.
 
 ## Mechanism design
 
@@ -45,7 +46,23 @@ needs hard limits and happens rarely; driving needs to spin freely and happens
 continuously. A single joint can't do both, so the fold_arm exists purely to let each
 joint do its own job independently.
 
-## Architecture
+## Repo structure
+
+This repo holds two ROS 2 packages, meant to be built together in one workspace:
+
+```
+reconfigurable_robot/
+├── reconfig_robot_description/   # robot geometry + ros2_control interfaces
+│   ├── urdf/                     # Xacro: modular wheel/chassis macros, fold mechanism
+│   ├── config/                   # controller definitions (controllers.yaml)
+│   ├── launch/                   # view_robot.launch.py (RViz), control.launch.py (full stack)
+│   └── rviz/                     # saved RViz config
+└── reconfig_robot_control/       # reconfiguration behavior
+    └── reconfig_robot_control/
+        └── reconfig_node.py      # the sequencing node (fold + controller switching)
+```
+
+### `reconfig_robot_description`
 
 - **`urdf/wheel.xacro`** — modular Xacro macros: `fixed_wheel` (front pair),
   `folding_wheel` (rear pair, parametrized for left/right mirroring via
@@ -59,10 +76,14 @@ joint do its own job independently.
     interface)
   - `fold_position_controller` — commands the fold joints
   - `joint_state_broadcaster` — publishes joint states and TF
-- **`launch/view_robot.launch.py`** — RViz visualization only (robot_state_publisher +
-  joint_state_publisher_gui + RViz with a saved config).
-- **`launch/control.launch.py`** — the full ros2_control stack (robot_state_publisher +
-  ros2_control_node + controller spawners).
+
+### `reconfig_robot_control`
+
+- **`reconfig_node.py`** — a standalone node that performs one full reconfiguration
+  sequence: deactivate the current drive controller → command the fold joints →
+  poll `/joint_states` until the fold reaches its target (within tolerance) →
+  activate the new drive controller. Uses a `switch_controller` service client, a
+  `/fold_position_controller/commands` publisher, and a `/joint_states` subscriber.
 
 ## Status
 
@@ -71,7 +92,10 @@ joint do its own job independently.
 - [x] `ros2_control` hardware interfaces and controllers (verified with mock hardware:
       front drive controller responds correctly to `cmd_vel`, fold controller responds
       correctly to position commands)
-- [ ] Reconfiguration sequencing node (`switch_controller`-based state machine)
+- [x] Reconfiguration sequencing node — 4-wheel → 2-wheel direction implemented and
+      verified end-to-end (controller deactivation, fold motion, controller
+      activation all confirmed via `ros2 control list_controllers` and `/joint_states`)
+- [ ] Reverse sequence (2-wheel → 4-wheel)
 - [ ] Gazebo simulation (physics, real odometry)
 - [ ] Terrain-driven autonomous reconfiguration demo (Nav2 integration)
 
@@ -88,9 +112,12 @@ ros2 launch reconfig_robot_description control.launch.py
 ros2 topic pub /front_diff_drive_controller/cmd_vel geometry_msgs/msg/TwistStamped \
   "{header: {frame_id: 'base_link'}, twist: {linear: {x: 0.2}, angular: {z: 0.0}}}"
 
-# Command the fold joints (0 = deployed, 1.5708 = folded)
+# Command the fold joints directly (0 = deployed, 1.5708 = folded)
 ros2 topic pub /fold_position_controller/commands std_msgs/msg/Float64MultiArray \
   "{data: [1.5708, 1.5708]}"
+
+# Run the full reconfiguration sequence (assumes 4-wheel mode is currently active)
+ros2 run reconfig_robot_control reconfig_node
 ```
 
 ## Requirements
@@ -98,6 +125,7 @@ ros2 topic pub /fold_position_controller/commands std_msgs/msg/Float64MultiArray
 - ROS 2 Humble
 - `ros2_control`, `ros2_controllers`, `diff_drive_controller`,
   `joint_state_broadcaster`, `xacro`
+- `rclpy`, `controller_manager_msgs`, `sensor_msgs`, `std_msgs` (for the control node)
 
 ## Scope and limitations
 
