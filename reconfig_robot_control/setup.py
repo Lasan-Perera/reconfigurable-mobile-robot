@@ -25,7 +25,7 @@ setup(
     entry_points={
         'console_scripts': [
             'reconfig_node = reconfig_robot_control.reconfig_node:main',
-
+            'cmd_vel_relay = reconfig_robot_control.cmd_vel_relay:main',
         ],
     },
 )
