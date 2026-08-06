@@ -3,7 +3,7 @@
 
   <ros2_control name="ReconfigRobotSystem" type="system">
     <hardware>
-      <plugin>mock_components/GenericSystem</plugin>
+      <plugin>gazebo_ros2_control/GazeboSystem</plugin>
     </hardware>
 
     <joint name="front_left_wheel_joint">

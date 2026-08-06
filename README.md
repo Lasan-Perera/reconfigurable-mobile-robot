@@ -96,7 +96,7 @@ reconfigurable_robot/
       verified end-to-end (controller deactivation, fold motion, controller
       activation all confirmed via `ros2 control list_controllers` and `/joint_states`)
 - [x] Reverse sequence (2-wheel → 4-wheel) — full bidirectional auto-detecting reconfiguration node
-- [ ] Gazebo simulation (physics, real odometry)
+- [x] Gazebo simulation (physics, real odometry) — real friction tuning debugged (caster drag, controller update-rate mismatch), reconfiguration verified working under real physics
 - [ ] Terrain-driven autonomous reconfiguration demo (Nav2 integration)
 
 ## Running it

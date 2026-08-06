@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <gazebo>
+    <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
+      <parameters>$(find reconfig_robot_description)/config/controllers.yaml</parameters>
+    </plugin>
+  </gazebo>
+
+  <gazebo reference="front_left_wheel">
+    <mu1>20.0</mu1>
+    <mu2>20.0</mu2>
+  </gazebo>
+
+  <gazebo reference="front_right_wheel">
+    <mu1>20.0</mu1>
+    <mu2>20.0</mu2>
+  </gazebo>
+
+  <gazebo reference="rear_left_wheel">
+    <mu1>20.0</mu1>
+    <mu2>20.0</mu2>
+  </gazebo>
+
+  <gazebo reference="rear_right_wheel">
+    <mu1>20.0</mu1>
+    <mu2>20.0</mu2>
+  </gazebo>
+
+  <gazebo reference="caster_wheel">
+    <mu1>0.01</mu1>
+    <mu2>0.01</mu2>
+  </gazebo>
+
+</robot>
