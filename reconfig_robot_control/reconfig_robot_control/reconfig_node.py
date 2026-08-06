@@ -2,8 +2,7 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float64MultiArray
 from sensor_msgs.msg import JointState
-from controller_manager_msgs.srv import SwitchController
-
+from controller_manager_msgs.srv import SwitchController, ListControllers
 
 
 class ReconfigNode(Node):
@@ -21,6 +20,7 @@ class ReconfigNode(Node):
             10
         )
         self.switch_client = self.create_client(SwitchController, '/controller_manager/switch_controller')
+        self.list_client = self.create_client(ListControllers, '/controller_manager/list_controllers')
         self.latest_joint_state = None
         self.get_logger().info('Reconfig node started')
 
@@ -62,29 +62,52 @@ class ReconfigNode(Node):
         future = self.switch_client.call_async(request)
         rclpy.spin_until_future_complete(self, future)
 
-        
         if future.result() is not None:
             self.get_logger().info(f'Switched controllers — activated: {activate}, deactivated: {deactivate}')
         else:
             self.get_logger().error('Switch controller call failed')
+
+    def get_active_drive_mode(self):
+        while not self.list_client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('Waiting for list_controllers service...')
+
+        request = ListControllers.Request()
+        future = self.list_client.call_async(request)
+        rclpy.spin_until_future_complete(self, future)
+
+        for controller in future.result().controller:
+            if controller.name == 'four_wheel_diff_drive_controller' and controller.state == 'active':
+                return 'four_wheel'
+            if controller.name == 'front_diff_drive_controller' and controller.state == 'active':
+                return 'front'
+        return None
 
 
 def main(args=None):
     rclpy.init(args=args)
     node = ReconfigNode()
 
-    # Step 1: deactivate the current drive controller (4-wheel mode)
-    node.switch_controllers(activate=[], deactivate=['four_wheel_diff_drive_controller'])
+    mode = node.get_active_drive_mode()
+    node.get_logger().info(f'Current drive mode: {mode}')
 
-    # Step 2: command the fold joints to "folded"
-    node.command_fold(1.5708, 1.5708)  # Example target positions for folded state
+    if mode == 'four_wheel':
+        # 4-wheel -> 2-wheel: fold up
+        node.switch_controllers(activate=[], deactivate=['four_wheel_diff_drive_controller'])
+        node.command_fold(1.5708, 1.5708)
+        while not node.is_fold_complete(1.5708, 1.5708):
+            rclpy.spin_once(node, timeout_sec=0.1)
+        node.switch_controllers(activate=['front_diff_drive_controller'], deactivate=[])
 
-    # Step 3: wait until folding is complete
-    while not node.is_fold_complete(1.5708, 1.5708):
-        rclpy.spin_once(node, timeout_sec=0.1)
+    elif mode == 'front':
+        # 2-wheel -> 4-wheel: fold down
+        node.switch_controllers(activate=[], deactivate=['front_diff_drive_controller'])
+        node.command_fold(0.0, 0.0)
+        while not node.is_fold_complete(0.0, 0.0):
+            rclpy.spin_once(node, timeout_sec=0.1)
+        node.switch_controllers(activate=['four_wheel_diff_drive_controller'], deactivate=[])
 
-    # Step 4: activate the new drive controller (2-wheel mode)
-    node.switch_controllers(activate= ['front_diff_drive_controller'], deactivate= [])
+    else:
+        node.get_logger().error('Could not determine current drive mode — aborting.')
 
     node.get_logger().info('Reconfiguration complete.')
     node.destroy_node()

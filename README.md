@@ -95,7 +95,7 @@ reconfigurable_robot/
 - [x] Reconfiguration sequencing node — 4-wheel → 2-wheel direction implemented and
       verified end-to-end (controller deactivation, fold motion, controller
       activation all confirmed via `ros2 control list_controllers` and `/joint_states`)
-- [ ] Reverse sequence (2-wheel → 4-wheel)
+- [x] Reverse sequence (2-wheel → 4-wheel) — full bidirectional auto-detecting reconfiguration node
 - [ ] Gazebo simulation (physics, real odometry)
 - [ ] Terrain-driven autonomous reconfiguration demo (Nav2 integration)
 
