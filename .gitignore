@@ -1,0 +1,22 @@
+# Colcon / ROS 2 build artifacts (only relevant if these ever end up inside the repo)
+build/
+install/
+log/
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.swp
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Misc generated files
+*.pdf

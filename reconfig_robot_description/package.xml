@@ -3,9 +3,8 @@
 <package format="3">
   <name>reconfig_robot_description</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="lasanperera.lsp@gmail.com">lasan-perera</maintainer>
-  <license>TODO: License declaration</license>
+  <description>URDF, ros2_control configuration, and launch files for the reconfigurable mobile robot</description>  <maintainer email="lasanperera.lsp@gmail.com">lasan-perera</maintainer>
+  <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
@@ -15,4 +14,5 @@
   <export>
     <build_type>ament_cmake</build_type>
   </export>
+
 </package>

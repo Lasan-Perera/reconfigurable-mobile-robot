@@ -120,6 +120,17 @@ ros2 topic pub /fold_position_controller/commands std_msgs/msg/Float64MultiArray
 ros2 run reconfig_robot_control reconfig_node
 ```
 
+## Building from source
+
+```bash
+cd ~/ros2_ws/src
+git clone https://github.com/Lasan-Perera/reconfigurable-mobile-robot.git reconfigurable_robot
+cd ~/ros2_ws
+rosdep install --from-paths src --ignore-src -r -y
+colcon build
+source install/setup.bash
+```
+
 ## Requirements
 
 - ROS 2 Humble

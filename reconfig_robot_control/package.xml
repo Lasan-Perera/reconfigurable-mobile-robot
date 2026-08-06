@@ -3,9 +3,9 @@
 <package format="3">
   <name>reconfig_robot_control</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>Reconfiguration sequencing node and cmd_vel relay for the reconfigurable mobile robot</description>
   <maintainer email="lasanperera.lsp@gmail.com">lasan-perera</maintainer>
-  <license>TODO: License declaration</license>
+  <license>MIT</license>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
@@ -19,6 +19,7 @@
   <depend>rclpy</depend>
   <depend>std_msgs</depend>
   <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
   <depend>controller_manager_msgs</depend>
 
 </package>
