@@ -46,13 +46,13 @@ def generate_launch_description():
     front_diff_drive_spawner = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['front_diff_drive_controller']
+        arguments=['front_diff_drive_controller', '--inactive']
     )
 
     four_wheel_diff_drive_spawner = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['four_wheel_diff_drive_controller', '--inactive']
+        arguments=['four_wheel_diff_drive_controller']
     )
 
     fold_position_controller_spawner = Node(
