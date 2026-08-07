@@ -16,7 +16,8 @@ def generate_launch_description():
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(gazebo_ros_pkg, 'launch', 'gazebo.launch.py')
-        )
+        ),
+        launch_arguments={'world': '/opt/ros/humble/share/turtlebot3_gazebo/worlds/turtlebot3_world.world'}.items()
     )
 
     # 2. Publish robot_description (same as before)
@@ -30,7 +31,8 @@ def generate_launch_description():
     spawn_entity = Node(
         package='gazebo_ros',
         executable='spawn_entity.py',
-        arguments=['-topic', 'robot_description', '-entity', 'reconfig_robot'],
+        arguments=['-topic', 'robot_description', '-entity', 'reconfig_robot',
+                '-x', '-2.0', '-y', '-0.5', '-z', '0.1'],
         output='screen'
     )
 
