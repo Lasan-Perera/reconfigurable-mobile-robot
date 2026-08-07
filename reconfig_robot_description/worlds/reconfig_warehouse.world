@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <world name="reconfig_warehouse">
+
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <!-- Outer boundary walls: room is 8m (x) by 6m (y), wall height 0.5m -->
+
+    <model name="wall_north">
+      <static>true</static>
+      <pose>0 3 0.25 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>8 0.1 0.5</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>8 0.1 0.5</size></box></geometry>
+        </visual>
+      </link>
+    </model>
+
+    <model name="wall_south">
+      <static>true</static>
+      <pose>0 -3 0.25 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>8 0.1 0.5</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>8 0.1 0.5</size></box></geometry>
+        </visual>
+      </link>
+    </model>
+
+    <model name="wall_east">
+      <static>true</static>
+      <pose>4 0 0.25 0 0 1.5708</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>6 0.1 0.5</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>6 0.1 0.5</size></box></geometry>
+        </visual>
+      </link>
+    </model>
+
+    <model name="wall_west">
+      <static>true</static>
+      <pose>-4 0 0.25 0 0 1.5708</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>6 0.1 0.5</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>6 0.1 0.5</size></box></geometry>
+        </visual>
+      </link>
+    </model>
+
+    <!--
+      Dividing wall across the middle (x=0), splitting the room into an
+      "open zone" (y > 0) and a "confined zone" (y < 0), with a single
+      0.25m-wide passage centered at y=0. Built as two segments either
+      side of the gap rather than one wall with a hole cut in it, since
+      SDF boxes can't have holes directly.
+
+      Room half-width in y is 3m. Gap is centered at x=0, width 0.25m,
+      so each wall segment runs from the room edge to the gap edge:
+      segment length = (8/2) - (0.25/2) = 3.875m
+    -->
+
+    <model name="divider_left">
+      <static>true</static>
+      <pose>-2.0625 0 0.25 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>3.875 0.1 0.5</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>3.875 0.1 0.5</size></box></geometry>
+        </visual>
+      </link>
+    </model>
+
+    <model name="divider_right">
+      <static>true</static>
+      <pose>2.0625 0 0.25 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>3.875 0.1 0.5</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>3.875 0.1 0.5</size></box></geometry>
+        </visual>
+      </link>
+    </model>
+
+    <!-- A couple of simple "shelf" obstacles in the open zone for mapping realism -->
+
+    <model name="shelf_1">
+      <static>true</static>
+      <pose>-2.5 1.5 0.4 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>1.5 0.4 0.8</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>1.5 0.4 0.8</size></box></geometry>
+        </visual>
+      </link>
+    </model>
+
+    <model name="shelf_2">
+      <static>true</static>
+      <pose>2.0 2.0 0.4 0 0 0.4</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>1.2 0.4 0.8</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>1.2 0.4 0.8</size></box></geometry>
+        </visual>
+      </link>
+    </model>
+
+  </world>
+</sdf>
