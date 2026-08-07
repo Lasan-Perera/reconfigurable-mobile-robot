@@ -2,6 +2,7 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="reconfig_robot">
 <xacro:include filename="reconfig_robot.ros2_control.xacro"/>
 <xacro:include filename="reconfig_robot.gazebo.xacro"/>
+<xacro:include filename="lidar.xacro"/>
     <xacro:macro name="fixed_wheel" params="prefix parent_link x y z">
 
         <link name="${prefix}_wheel">
@@ -125,5 +126,7 @@
         <child link="caster_wheel"/>
         <origin xyz="-0.12 0 -0.03" rpy="0 0 0"/>
     </joint>
+
+
 
 </robot>
