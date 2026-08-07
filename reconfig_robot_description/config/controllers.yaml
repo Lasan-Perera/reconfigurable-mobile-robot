@@ -16,6 +16,8 @@ front_diff_drive_controller:
     right_wheel_names: ["front_right_wheel_joint"]
     wheel_separation: 0.18
     wheel_radius: 0.05
+    base_frame_id: chassis_link
+    odom_frame_id: odom
 
 four_wheel_diff_drive_controller:
   ros__parameters:
@@ -23,6 +25,8 @@ four_wheel_diff_drive_controller:
     right_wheel_names: ["front_right_wheel_joint", "rear_right_spin_joint"]
     wheel_separation: 0.18
     wheel_radius: 0.05
+    base_frame_id: chassis_link
+    odom_frame_id: odom
 
 fold_position_controller:
   ros__parameters:
